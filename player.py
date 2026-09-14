@@ -1,5 +1,6 @@
 import pygame
 
+from constants import RADIUS
 from shape import Shape
 
 
@@ -22,19 +23,19 @@ class Player(Shape):
         if self.steps >= 20 / self.speed:
             keys = pygame.key.get_pressed()
             if keys[pygame.K_a] and self.direction != pygame.Vector2(1, 0):
-                self.direction = pygame.Vector2(-1, 0)
+                self.direction = self.change_direction = pygame.Vector2(-1, 0)
                 self.cardinal_direction = 2
                 self.change_at = self.position.copy()
             if keys[pygame.K_d] and self.direction != pygame.Vector2(-1, 0):
-                self.direction = pygame.Vector2(1, 0)
+                self.direction = self.change_direction = pygame.Vector2(1, 0)
                 self.cardinal_direction = 0
                 self.change_at = self.position.copy()
             if keys[pygame.K_w] and self.direction != pygame.Vector2(0, 1):
-                self.direction = pygame.Vector2(0, -1)
+                self.direction = self.change_direction = pygame.Vector2(0, -1)
                 self.cardinal_direction = 3
                 self.change_at = self.position.copy()
             if keys[pygame.K_s] and self.direction != pygame.Vector2(0, -1):
-                self.direction = pygame.Vector2(0, 1)
+                self.direction = self.change_direction = pygame.Vector2(0, 1)
                 self.cardinal_direction = 1
                 self.change_at = self.position.copy()
             self.steps = 0
@@ -43,9 +44,8 @@ class Player(Shape):
         self.position += self.velocity
 
     def eat(self) -> None:
-        pass
-        # self.speed += 1
-        # self.speed = round(self.speed / 2) * 2
+        self.speed += 1
+        self.speed = round(self.speed / 2) * 2
 
     def collide_wall(self, width: float, height: float) -> bool:
         return (
@@ -54,3 +54,6 @@ class Player(Shape):
             or self.position.y < 0
             or self.position.y > height
         )
+
+    def collide_self(self, pos: pygame.Vector2) -> bool:
+        return (self.position + self.velocity) == pos
